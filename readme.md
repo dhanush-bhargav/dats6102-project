@@ -17,3 +17,10 @@ Due to constraints, we are only able to run this environment on our local machin
 1. `master` is the primary branch for this repository. Make sure to pull and push changes to it.
 2. To make any changes, create a new branch from the updated `master` branch, commit your changes to that branch and then submit a pull request to merge the branch back to `master`.
 3. DO NOT FORK. DO NOT commit directly to `master`.
+
+## Setting up the environment
+1. Start Hadoop DFS and Yarn using the commands `start-dfs.sh` and `start-yarn.sh` commands respectively. (These commands might vary in your system)
+2. Create new directory using the command `hadoop fs -mkdir /user/input`.
+3. Download the dataset from this [link](https://www.kaggle.com/datasets/dhruvildave/spotify-charts/). 
+4. Use the command `hadoop fs -put path-to-dowloaded file /user/input`.
+5. Now run `hadoop fs -ls /user/input` and you should be able to see the file is now in the HDFS.
