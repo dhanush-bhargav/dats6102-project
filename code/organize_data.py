@@ -15,7 +15,7 @@ def clean_data(session):
 
     #Check for missing values in any of the columns
     missing_val = session.sql("SELECT * FROM charts_data WHERE title IS NULL OR rank IS NULL OR date IS NULL OR artist IS NULL OR region IS NULL OR streams IS NULL")
-    print(missing_val.count())
+    print(f"Number of missing values in dataset {missing_val.count()}")
 
     return data
 
@@ -36,8 +36,7 @@ def create_artist_leaderboard(session, data):
     #Creating a temporary table view to run SQL queries
     data.createOrReplaceTempView("cat_charts_data")
 
-    artist_leaderboard = session.sql("SELECT artist, rank_cat, SUM(streams) AS total_streams, COUNT(*) num_rank_cat FROM cat_charts_data GROUP BY artist, rank_cat")
-    artist_leaderboard.show()
+    artist_leaderboard = session.sql("SELECT artist, rank_cat, SUM(streams) AS total_streams, COUNT(*) AS num_rank_cat FROM cat_charts_data WHERE region IN ('Canada', 'United States', 'India', 'Mexico', 'Australia', 'United Kingdom') GROUP BY artist, rank_cat")
     artist_leaderboard.write.csv("hdfs://localhost:9000/user/input/artists.csv", header="true", mode="overwrite")
 
 
