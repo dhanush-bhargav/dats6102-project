@@ -13,7 +13,7 @@ def extract_data(session):
 
     # Top200 chart has the most number of entries so we're only interested in that entries with chart=top200.
     # We are only interested in the columns title, rank, date, artist, region, and streams so we will select only those columns.
-    result = session.sql("SELECT title, rank, date, artist, region, streams FROM charts_data WHERE chart='top200'")
+    result = session.sql("SELECT title, rank, date, SUBSTRING_INDEX(artist, ',', 1) AS artist, region, streams FROM charts_data WHERE chart='top200'")
     result.write.csv("hdfs://localhost:9000/user/input/top200_raw.csv", header="true", mode="overwrite")
 
 
