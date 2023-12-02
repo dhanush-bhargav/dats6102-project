@@ -2,9 +2,9 @@
 import createSession
 import organize_data
 import extract_data
+import Visualization as vz
 
 #%% 
-
 SESSION_NAME = "new_session_1"
 
 session = createSession.getOrCreateSession(SESSION_NAME)
@@ -22,7 +22,6 @@ def Extract_data():
 
     Above commands will get executed and will be writing csv again to
     the hadoop. 
-
     '''
 
     extract_data.extract_data(session)
@@ -40,8 +39,16 @@ def readArtistDF():
 def readTop200Cat():
     rankCategoryDF = extract_data.Top200CatSession(session)
     return rankCategoryDF
+
+#%%
+def transformData():
+    return session
+
 # %%
 
 if __name__ == "__main__":
+    #%%
     Extract_data()
+    #%%
+    transformData()
 # %%
