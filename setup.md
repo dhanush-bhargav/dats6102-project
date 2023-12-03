@@ -88,3 +88,32 @@ The main data file required for this project is the `charts.csv` file present in
     hadoop fs -put charts.csv /user/input
 ```
 3. Now the data file for this project is in Hadoop.
+
+## Running the code
+
+### Additional dependencies
+1. The project also requires seaborn to be installed for running. Use the following command:
+```
+    pip install seaborn
+```
+
+### Running the main file
+
+1. Ensure hdfs is running. If not, run the command:
+```
+    start-dfs.sh
+```
+from the terminal.
+
+2. From the root directory run the command:
+```
+    python code/code_runner.py
+```
+to execute the code.
+
+3. If any plot windows pop up during execution, please close them to continue execution. Execution will be halted as long as the window is open.
+
+## Post note about running Hadoop on Windows.
+All the members of this team have Mac or Linux machines which means we did not run any of the software or code on Windows. Although the instructions provided above will help install and run the software on Windows, it is possible that you may run into problems.
+
+Installation for Linux or Mac is similar to Windows. Please refer this [link](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html) for instructions in case this project does not run in Windows and you would like to try it on a Mac or Linux machine.
