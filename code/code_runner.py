@@ -1,54 +1,36 @@
-#%%
 import createSession
 import organize_data
 import extract_data
-import Visualization as vz
+from modelling import Modelling
 
-#%% 
+# Create a Spark Session with the name stored in SESSION_NAME
+
 SESSION_NAME = "new_session_1"
-
 session = createSession.getOrCreateSession(SESSION_NAME)
 
+# Read data stored in csv file from Hadoop DFS, extract only the required data write it back into Hadoop as a CSV file.
+data = extract_data.extract_data(session)
 
-#%%
-def Extract_data():
-    '''
-    The reason to use this funciton is beacause without function 
-    every time I call/ whenever I call either readArtistDF/readTop200Cat
+# Check if there are any missing values in the extracted data set and clean it (there's no missing values in our dataset so we have not cleaned)
+data = organize_data.clean_data(session, data)
 
-    data = organize_data.clean_data(session)
-    data = organize_data.categorize_ranks(session, data)
-    data = organize_data.create_artist_leaderboard(session, data)
+# Categorize songs based on their position in the ranking charts.
+data = organize_data.categorize_ranks(session, data)
 
-    Above commands will get executed and will be writing csv again to
-    the hadoop. 
-    '''
+# Creates an artist leaderboard based on their appearances in the ranking categories.
+artist_data = organize_data.create_artist_leaderboard(session, data)
 
-    extract_data.extract_data(session)
-    data = organize_data.clean_data(session)
-    data = organize_data.categorize_ranks(session, data)
-    data = organize_data.create_artist_leaderboard(session, data)
+del data #Cleaning up some space in the RAM
 
-#%%
-def readArtistDF():
-    # Reading the newly written CSV's
-    artistDF = extract_data.arstistSession(session)
-    return artistDF
+# Create an instance of the Modelling object
+model = Modelling(session, artist_data)
 
-#%%
-def readTop200Cat():
-    rankCategoryDF = extract_data.Top200CatSession(session)
-    return rankCategoryDF
+# Visualizing the data
+model.countPlot()
 
-#%%
-def transformData():
-    return session
+# Transform the data before running the model
+model.transformingDataSql()
 
-# %%
+# Perform K-Means clustering on the data
+model.kMeansClustering()
 
-if __name__ == "__main__":
-    #%%
-    Extract_data()
-    #%%
-    transformData()
-# %%
