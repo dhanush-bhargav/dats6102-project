@@ -9,6 +9,7 @@ class Modelling:
     def __init__(self, session, data):
         self.session = session
         self.artistDF = data
+        self.top200DF = data
 
     # def getData(self):
     #     self.artistDF = cr.readArtistDF()
@@ -49,6 +50,62 @@ class Modelling:
     # def duplicateRecords(self):
     #     duplicateRecords = self.result_df.exceptAll(self.result_df.dropDuplicates(['artist']))
     #     return duplicateRecords.count()
+
+    def topRankedAlbums(self):
+        '''
+        As I am a fan of the Taylor Swift, the fucntion 
+        entirely focuses on the EDA of Taylor Swift. 
+        '''
+        self.top200DF.createOrReplaceTempView("my_table")
+
+        result1 = self.session.sql("""
+                                SELECT artist, title, rank
+                                FROM my_table
+                                WHERE artist LIKE '%Taylor Swift%'
+                                ORDER BY rank ASC
+                                LIMIT 10
+                                """)
+        # No.of times taylor swift appeared in Top 10
+        result2 = self.session.sql("""
+                                    SELECT Count(*) N_InTop10 
+                                    FROM my_table 
+                                    WHERE artist 
+                                    LIKE '%Taylor Swift%' 
+                                    AND rank_cat = 'top10';
+                                    """)
+        # How many songs/albums appeared in top10
+        result3 = self.session.sql('''
+                                    SELECT title, count(title) AS count 
+                                    FROM my_table 
+                                    WHERE artist LIKE '%Taylor Swift%' 
+                                    AND rank_cat = 'top200' 
+                                    GROUP BY title 
+                                    ORDER BY count DESC;
+                                    ''')
+        # Number of days the song/album was on the chart
+        result4 = self.session.sql('''
+                                    SELECT title, count(*) AS days 
+                                    FROM my_table 
+                                    WHERE artist LIKE '%Taylor Swift%' 
+                                    AND rank_cat = 'top200' 
+                                    GROUP BY title 
+                                    ORDER BY days DESC;
+                                    ''')
+        
+        result5 =  self.session.sql('''
+                                    SELECT title,YEAR(date) year ,date ,rank, region 
+                                    FROM my_table 
+                                    WHERE title IN ('Love Story (Taylor’s Version)', 'Delicate', 'Lover') 
+                                    AND rank_cat='top200'
+                                    ORDER BY rank ASC;
+                                    ''')
+
+
+        result1.show()
+        result2.show()
+        result3.show()
+        result4.show()
+        result5.show()
     
     def kMeansClustering(self):
         
@@ -71,7 +128,7 @@ class Modelling:
 
         evaluator = ClusteringEvaluator(predictionCol="cluster") 
         silhouette_score = evaluator.evaluate(clusteringModel)
-        print(f"Silhouette Score: {silhouette_score}")
+        print(f"Silhouette Score: {silhouette_score * 100 : .2f}%")
 
         clusteringModel = clusteringModel.drop('features')
         clusteringModel.write.csv("hdfs://localhost:9000/user/input/results.csv", header='true', mode='overwrite')

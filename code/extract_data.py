@@ -19,6 +19,8 @@ def extract_data(session):
     # We are only interested in the columns title, rank, date, artist, region, and streams so we will select only those columns.
     result = session.sql("SELECT title, rank, date, SUBSTRING_INDEX(artist, ',', 1) AS artist, region, streams FROM charts_data WHERE chart='top200'")
     
+    session.catalog.dropTempView('charts_data') #Dropping the temp table as we no longer need it.
+
     return result
 
 if __name__=="__main__":
