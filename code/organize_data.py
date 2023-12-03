@@ -9,6 +9,8 @@ def clean_data(session, data):
     missing_val = session.sql("SELECT * FROM charts_data WHERE title IS NULL OR rank IS NULL OR date IS NULL OR artist IS NULL OR region IS NULL OR streams IS NULL")
     print(f"Number of missing values in dataset {missing_val.count()}")
 
+    session.catalog.dropTempView('charts_data') #Dropping the temp table as we no longer need it.
+
     return data
 
 def categorize_ranks(session, data):
@@ -34,6 +36,9 @@ def create_artist_leaderboard(session, data):
     
     #Write the artists leaderboard file back to Hadoop DFS
     artist_leaderboard.write.csv("hdfs://localhost:9000/user/input/artists.csv", header="true", mode="overwrite")
+
+    session.catalog.dropTempView('cat_charts_data') #Dropping the temp table as we no longer need it.
+
     return artist_leaderboard
 
 
